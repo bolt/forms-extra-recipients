@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bolt\BoltFormsExtraRecipients;
 
-use AcmeCorp\ReferenceExtension\FormAction;
 use Bolt\BoltForms\Event\PostSubmitEvent;
 use Bolt\Extension\ExtensionRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Mailer\MailerInterface;
 use Tightenco\Collect\Support\Collection;
 
 class FormPostSubmitSubscriber implements EventSubscriberInterface
@@ -14,9 +16,13 @@ class FormPostSubmitSubscriber implements EventSubscriberInterface
     /** @var ExtensionRegistry */
     private $registry;
 
-    public function __construct(ExtensionRegistry $registry)
+    /** @var MailerInterface */
+    private $mailer;
+
+    public function __construct(ExtensionRegistry $registry, MailerInterface $mailer)
     {
         $this->registry = $registry;
+        $this->mailer = $mailer;
     }
 
     public function run(PostSubmitEvent $event): void
@@ -27,19 +33,29 @@ class FormPostSubmitSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $actions = $this->getFormActions($form);
+        $actions = $this->getFormActions($event, $form);
 
-        array_map('self::run', $actions);
+        /** @var FormAction $action */
+        foreach ($actions as $action) {
+            $this->mailer->send($action->buildEmail());
+        }
     }
 
-    private function getFormActions(Form $form): array
+    private function getFormActions(PostSubmitEvent $event, Form $form): array
     {
         $formName = $form->getName();
         $actions = collect([]);
 
-        foreach($this->getConfig()->get('actions', []) as $action) {
+        $config = $event->getFormConfig();
+
+        // There should be a better way to handle this.
+        if (! $config->has('templates')) {
+            $config->put('templates', $event->getConfig()->get('templates'));
+        }
+
+        foreach ($this->getConfig()->get('actions', []) as $name => $action) {
             if (array_key_exists('form', $action) && $action['form'] === $formName) {
-                $actions->add(new FormAction($action, $form));
+                $actions->add(new FormAction($name, $action, $form, $config, $event->getMeta()));
             }
         }
 

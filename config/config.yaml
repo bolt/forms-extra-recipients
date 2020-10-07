@@ -1,13 +1,12 @@
-# Reference extension configuration file
+# Define your own actions to send form submissions to multiple people.
 
 actions:
-  send_contact_submissions:
-    form: contact
-    template: 'test.html.twig'
+  send_contact_submissions: # name of the form. can be whatever you need it to be.
+    form: contact # the name of the Bolt Form that triggers this action when submitted.
     to:
-      email: bob@twokings.nl
-      field:
-        name: department
-        mapping:
-          sales: [ dan@arb.com, casey@arb.com ]
-          accounts: [ james@arb.com, anne@arb.com ]
+      email: example.org # send to this specific email
+      field: # send based on a field in the form
+        name: department # the name of the field in the form
+        values:
+          sales: [ dan@example.org, casey@example.org, bob@example.org, sammar@example.org ] # if the field 'department' has the value 'sales', send to those emails
+          accounts: [ ivo@example.org, anne@example.org ] # if the field 'department' has the value 'accounts', send to those emails

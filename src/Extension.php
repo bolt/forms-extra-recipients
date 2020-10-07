@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Bolt\BoltFormsExtraRecipients;
 
 use Bolt\Extension\BaseExtension;
-use Symfony\Component\Routing\Route;
 
 class Extension extends BaseExtension
 {
