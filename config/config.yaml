@@ -1,0 +1,13 @@
+# Reference extension configuration file
+
+actions:
+  send_contact_submissions:
+    form: contact
+    template: 'test.html.twig'
+    to:
+      email: bob@twokings.nl
+      field:
+        name: department
+        mapping:
+          sales: [ dan@arb.com, casey@arb.com ]
+          accounts: [ james@arb.com, anne@arb.com ]
