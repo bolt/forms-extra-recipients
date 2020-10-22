@@ -47,6 +47,7 @@ class FormPostSubmitSubscriber implements EventSubscriberInterface
         $actions = collect([]);
 
         $config = $event->getFormConfig();
+        $generalFormsConfig = $event->getConfig();
 
         // There should be a better way to handle this.
         if (! $config->has('templates')) {
@@ -55,7 +56,7 @@ class FormPostSubmitSubscriber implements EventSubscriberInterface
 
         foreach ($this->getConfig()->get('actions', []) as $name => $action) {
             if (array_key_exists('form', $action) && $action['form'] === $formName) {
-                $actions->add(new FormAction($name, $action, $form, $config, $event->getMeta()));
+                $actions->add(new FormAction($name, $action, $form, $config, $generalFormsConfig, $event->getMeta()));
             }
         }
 
