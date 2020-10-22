@@ -4,7 +4,7 @@ actions:
   send_contact_submissions: # name of the form. can be whatever you need it to be.
     form: contact # the name of the Bolt Form that triggers this action when submitted.
     to:
-      email: example.org # send to this specific email
+      email: someone@example.org # send to this specific email
       field: # send based on a field in the form
         name: department # the name of the field in the form
         values:

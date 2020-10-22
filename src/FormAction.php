@@ -27,18 +27,22 @@ class FormAction
     /** @var array */
     private $meta = [];
 
-    public function __construct(string $name, array $action, Form $form, Collection $formConfig, array $meta = [])
+    /** @var Collection */
+    private $generalFormsConfig;
+
+    public function __construct(string $name, array $action, Form $form, Collection $formConfig, Collection $generalFormsConfig, array $meta = [])
     {
         $this->form = $form;
         $this->action = collect($action);
         $this->name = $name;
         $this->formConfig = $formConfig;
         $this->meta = $meta;
+        $this->generalFormsConfig = $generalFormsConfig;
     }
 
     public function buildEmail(): TemplatedEmail
     {
-        $email = (new EmailFactory())->create($this->formConfig, $this->form, $this->meta);
+        $email = (new EmailFactory())->create($this->formConfig, $this->generalFormsConfig, $this->form, $this->meta);
 
         // Add recipients
         foreach ($this->getTo() as $recipient) {
